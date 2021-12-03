@@ -1,0 +1,87 @@
+<html>
+<head>
+</head>
+<script>
+function getRandomInt(min, max) {
+	return Math.floor(Math.random()*(max-min+1))+min; //возвращает случайное число в диапазоне от min до max(включительно, так как есть +1)
+	//Math.floor округляет число вниз
+}
+
+function getCard(){ // возвращает рандомную карту из набора cards
+	var cards = ["6", "7", "8", "9", "10", "J", "Q", "K", "A"];
+	return cards[getRandomInt(0, cards.length-1)]; //вызывает предыдущую функцию с min=0, max=длина cards-1
+}
+
+
+function getSum(hand){ //Рука - Набор карт игрока или дилера. Hand-массив с картами игрока
+	var sum=0; //сумма очков игрока
+	for (var i=0; i<hand.length; i++) {
+		var card = hand[i]; //перебираем каждую карту
+		if (card != 'A') { //если карта не туз
+			if (card == 'J' || card == "Q" || card == "K"){ //если карта валет или королева или король то добавляем в сумму очков 10
+				sum = sum + 10	
+			} else { //если не валет, не королева и не король, то добавляем в сумму значение карты (от 2 до 10) с помощью parseInt (принимает сроку и возвращает число)
+				sum =sum + parseInt(card);
+			}
+		}
+	}
+	for (var i=0; i<hand.length; i++) {
+		var card = hand[i];
+		if (card == "A") {//если карта туз
+			if (sum>10) {//и если уже имеющаяся сумма карт > 10 (так как 10+11=21, то добавляем 1)
+				sum= sum +1;
+			} else { //иначе добавляем за туза 11
+				sum = sum + 11;
+			}
+		}
+	}
+	return sum //возвращаем сумму карт игрока
+}
+
+function getStatus() { //показывает имеющиеся карты у дилера и игрока (объединяет все элементы в массивах с помощью join)
+	return 'Дилер: ' + dealer.join(' ') + '   Игрок: ' + player.join(' ') + '.';
+}
+
+alert("Начинаем игру!")
+var dealer = [getCard()]; //в массиве dealer хранятся карты дилера, с помощью функции getCard мы добавляеем в массив случайную карту
+var player = [getCard(), getCard()]; //в массиве player хранятся карты игрока, с помощью функции getCard мы добавляеем в массив 2 случайных карты
+var answer = ''; //храним ответ игрока, хочет ли он еще одну карту
+
+do { 
+	answer = prompt(getStatus()+"  Хотите еще карту? 1-да, другое значение-нет");
+	if (answer == '1') {
+		player.push(getCard()); //добавляем случайную карту в массив игрока	  
+	}
+	sum = getSum(player);//получаем сумму карт в массиве игрока
+	if (sum > 21) {
+		alert ('Перебор, Вы проиграли! ' + getStatus());
+		break;
+	} else if (sum == 21) {
+		alert ('Black Jack у игрока!   ' + getStatus());
+		break;
+	}
+	alert(getStatus());
+} while (answer =='1');
+
+if (sum<=21){
+	do {
+		dealer.push(getCard());
+		sumDealer = getSum(dealer);
+		if (sumDealer==21){
+			alert("Black Jack у дилера");
+			break;
+		} 
+	} while (sumDealer<17);
+}
+alert('Дилер: ' + dealer.join(' ') + ' Игрок: ' + player.join(' '));
+alert("Текущая сумма карт у игрока: " + getSum(player));
+alert("Текущая сумма карт у дилера: " + getSum(dealer));
+
+if (sum == sumDealer){
+	alert("Ровно");
+}
+if (sum < 21 | sumDealer < 21 | sum>sumDealer){
+	alert("Победа игрока");
+}
+</script>
+</html>
